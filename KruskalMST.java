@@ -4,13 +4,12 @@ import java.util.List;
 
 public class KruskalMST {
 
-    // Arista (u, v) con peso w
     public static class Edge implements Comparable<Edge> {
         public final int u;
         public final int v;
-        public final int w;
+        public final long w;
 
-        public Edge(int u, int v, int w) {
+        public Edge(int u, int v, long w) {
             this.u = u;
             this.v = v;
             this.w = w;
@@ -18,16 +17,22 @@ public class KruskalMST {
 
         @Override
         public int compareTo(Edge other) {
-            return Integer.compare(this.w, other.w); // orden no decreciente por peso
-        }
-
-        @Override
-        public String toString() {
-            return "(" + u + ", " + v + ", " + w + ")";
+            return Long.compare(this.w, other.w);
         }
     }
 
-    // Conjuntos Disjuntos (Union-Find)
+    public static class Result {
+        public final List<Edge> edges;
+        public final long totalWeight;
+        public final boolean connected;
+
+        public Result(List<Edge> edges, long totalWeight, boolean connected) {
+            this.edges = edges;
+            this.totalWeight = totalWeight;
+            this.connected = connected;
+        }
+    }
+
     public static class UnionFind {
         private final int[] parent;
         private final int[] rank;
@@ -36,24 +41,25 @@ public class KruskalMST {
             parent = new int[n];
             rank = new int[n];
             for (int i = 0; i < n; i++) {
-                parent[i] = i; // MAKE-SET(i)
+                parent[i] = i;
                 rank[i] = 0;
             }
         }
 
-        public int find(int x) { // FIND-SET(x)
-            if (parent[x] != x)
-                parent[x] = find(parent[x]); // compresión de caminos
+        public int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
             return parent[x];
         }
 
-        public boolean union(int a, int b) { // UNION(a, b)
+        public boolean union(int a, int b) {
             int ra = find(a);
             int rb = find(b);
-            if (ra == rb)
+            if (ra == rb) {
                 return false;
+            }
 
-            // unión por rango
             if (rank[ra] < rank[rb]) {
                 parent[ra] = rb;
             } else if (rank[ra] > rank[rb]) {
@@ -66,50 +72,64 @@ public class KruskalMST {
         }
     }
 
-    /**
-     * KRUSKAL(G):
-     *  - n: número de vértices (0..n-1)
-     *  - edges: lista de aristas de G
-     * Devuelve las aristas del árbol de expansión mínima
-     * (o un bosque de expansión mínima si G es disconexo).
-     */
-    public static List<Edge> kruskal(int n, List<Edge> edges) {
+    public static Result kruskal(int n, List<Edge> edges) {
         List<Edge> sorted = new ArrayList<>(edges);
-        Collections.sort(sorted); // ordenar aristas en orden no decreciente según su peso
+        Collections.sort(sorted);
 
         UnionFind uf = new UnionFind(n);
         List<Edge> mst = new ArrayList<>();
+        long totalWeight = 0;
 
-        for (Edge e : sorted) { // tomadas en orden no decreciente según su peso
-            if (uf.find(e.u) != uf.find(e.v)) {
-                mst.add(e);          // A = A ∪ {(u, v)}
-                uf.union(e.u, e.v);  // unir componentes
+        for (Edge e : sorted) {
+            if (uf.union(e.u, e.v)) {
+                mst.add(e);
+                totalWeight += e.w;
             }
         }
 
-        return mst;
+        boolean connected = mst.size() == Math.max(0, n - 1);
+        return new Result(mst, totalWeight, connected);
     }
 
-    // Ejemplo de uso
+    private static String vertexName(int v) {
+        return String.valueOf((char) ('A' + v));
+    }
+
+    public static void printResult(Result result, int vertexCount) {
+        System.out.println("========================================");
+        System.out.println("Algoritmo: Kruskal");
+        System.out.println("Aristas seleccionadas:");
+
+        if (result.edges.isEmpty()) {
+            System.out.println("  (sin aristas)");
+        } else {
+            for (Edge edge : result.edges) {
+                System.out.println("  " + vertexName(edge.u) + " - " + vertexName(edge.v) + " (peso: " + edge.w + ")");
+            }
+        }
+
+        System.out.println("Costo total: " + result.totalWeight);
+        if (result.connected && result.edges.size() == Math.max(0, vertexCount - 1)) {
+            System.out.println("Estado: árbol de expansión mínima válido.");
+        } else {
+            System.out.println("Estado: el grafo no es conexo; la salida corresponde a un bosque de expansión mínima.");
+        }
+        System.out.println("========================================");
+    }
+
     public static void main(String[] args) {
-        int n = 4; // vértices: 0,1,2,3  (A,B,C,D)
+        int n = 4;
 
         List<Edge> edges = List.of(
-            new Edge(0, 1, 1), // A-B
-            new Edge(1, 2, 2), // B-C
-            new Edge(0, 2, 3), // A-C
-            new Edge(1, 3, 3), // B-D
-            new Edge(0, 3, 4), // A-D
-            new Edge(2, 3, 5)  // C-D
+            new Edge(0, 1, 1),
+            new Edge(1, 2, 2),
+            new Edge(0, 2, 3),
+            new Edge(1, 3, 3),
+            new Edge(0, 3, 4),
+            new Edge(2, 3, 5)
         );
 
-        List<Edge> mst = kruskal(n, edges);
-        System.out.println("Aristas del árbol de expansión mínima: " + mst);
-
-        int total = 0;
-        for (Edge e : mst)
-            total += e.w;
-
-        System.out.println("Peso total: " + total);
+        Result result = kruskal(n, edges);
+        printResult(result, n);
     }
 }
