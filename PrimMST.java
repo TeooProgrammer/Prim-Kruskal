@@ -56,6 +56,9 @@ public class PrimMST {
         }
     }
 
+// Implementación del algoritmo de Prim utilizando cola de prioridad.
+// Calcula el árbol de expansión mínima desde un vértice raíz.
+
     public static Result prim(List<Edge>[] adj, int r) {
         int n = adj.length;
         long[] key = new long[n];

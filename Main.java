@@ -11,6 +11,7 @@ public class Main {
         List<PrimMST.Edge>[] adjacency;
     }
 
+// Menú que permite cargar grafos y ejecutar los algoritmos.
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         GraphData graph = null;

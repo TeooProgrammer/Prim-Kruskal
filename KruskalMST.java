@@ -32,6 +32,8 @@ public class KruskalMST {
             this.connected = connected;
         }
     }
+    
+// Estructura de datos para manejar conjuntos disjuntos con compresión de caminos.
 
     public static class UnionFind {
         private final int[] parent;
@@ -71,6 +73,9 @@ public class KruskalMST {
             return true;
         }
     }
+
+// Implementación del algoritmo de Kruskal utilizando Union-Find.
+// Construye el MST seleccionando aristas de menor peso sin formar ciclos.
 
     public static Result kruskal(int n, List<Edge> edges) {
         List<Edge> sorted = new ArrayList<>(edges);
