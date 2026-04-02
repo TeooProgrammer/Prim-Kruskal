@@ -91,8 +91,12 @@ public class KruskalMST {
         return new Result(mst, totalWeight, connected);
     }
 
+
     private static String vertexName(int v) {
-        return String.valueOf((char) ('A' + v));
+        if (v >= 0 && v < 26) {
+            return String.valueOf((char) ('A' + v));
+        }
+        return "V" + v;
     }
 
     public static void printResult(Result result, int vertexCount) {
