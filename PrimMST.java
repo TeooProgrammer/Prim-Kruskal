@@ -46,13 +46,13 @@ public class PrimMST {
         public final List<MSTEdge> edges;
         public final long totalWeight;
         public final boolean connected;
-        public final int root;
+        public final int root;//nodo inicial del arbol en formación
 
         public Result(List<MSTEdge> edges, long totalWeight, boolean connected, int root) {
             this.edges = edges;
             this.totalWeight = totalWeight;
             this.connected = connected;
-            this.root = root;
+            this.root = root; 
         }
     }
 
