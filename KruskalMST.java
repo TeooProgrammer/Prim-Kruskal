@@ -36,8 +36,8 @@ public class KruskalMST {
 // Estructura de datos para manejar conjuntos disjuntos con compresión de caminos.
 
     public static class UnionFind {
-        private final int[] parent;
-        private final int[] rank;
+        private final int[] parent; //que conjunto es cada nodo
+        private final int[] rank; //equilibra el árbol
 
         public UnionFind(int n) {
             parent = new int[n];
